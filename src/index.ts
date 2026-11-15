@@ -13,3 +13,5 @@ export { playerContext } from './ui/context.js';
 export { PlayerConsumer } from './ui/player-consumer.js';
 export { formatTime, formatTimeForAria } from './ui/format.js';
 export * from './ui/controls/index.js';
+export { DEFAULT_SHORTCUTS, type ShortcutHandler, type ShortcutMap } from './ui/keyboard.js';
+export { AUTO_HIDE_DELAY_MS } from './ui/auto-hide.js';

@@ -92,6 +92,7 @@ export class PlayerController extends EventTarget {
   private rafId = 0;
   private connected = false;
   private engineLive = false;
+  private volumeRestored = false;
   private readonly video: WebkitVideo;
   private readonly host: WebkitElement;
 
@@ -106,7 +107,6 @@ export class PlayerController extends EventTarget {
     this.store = new Store(
       createInitialState({ capabilities: { ...detectCapabilities(), ...options.capabilities } }),
     );
-    this.restoreVolume();
     this.syncVolume();
   }
 
@@ -122,6 +122,12 @@ export class PlayerController extends EventTarget {
   connect(): void {
     if (this.connected) return;
     this.connected = true;
+    if (!this.volumeRestored) {
+      // Deferred to the first connect so options (e.g. persistVolume) are final.
+      this.volumeRestored = true;
+      this.restoreVolume();
+      this.syncVolume();
+    }
     for (const type of MEDIA_EVENTS) this.video.addEventListener(type, this.onMediaEvent);
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange);

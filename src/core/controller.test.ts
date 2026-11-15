@@ -288,9 +288,11 @@ describe('PlayerController', () => {
 
       const next = createVideo();
       const restored = new PlayerController(host, next.video, { persistVolume: true });
+      restored.connect();
       expect(next.video.volume).toBeCloseTo(0.3);
       expect(next.video.muted).toBe(true);
       expect(restored.state).toMatchObject({ muted: true });
+      restored.disconnect();
     });
 
     it('does not persist automatic autoplay muting', async () => {
