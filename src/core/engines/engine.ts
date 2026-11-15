@@ -14,6 +14,8 @@ export interface Engine {
   destroy(): void;
   /** Subscribe to errors the engine could not recover from (or non-fatal warnings). */
   onError(callback: (error: PlayerError) => void): () => void;
+  /** Reports whether the stream is live, for engines that know before `duration` does. */
+  onLiveChange?(callback: (live: boolean) => void): () => void;
 }
 
 /** Shared error-listener bookkeeping for engines. */

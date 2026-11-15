@@ -9,7 +9,11 @@ export function createMockHls(supported = true) {
 
   class MockHls {
     static isSupported = () => supported;
-    static Events = { ERROR: 'hlsError', FRAG_BUFFERED: 'hlsFragBuffered' };
+    static Events = {
+      ERROR: 'hlsError',
+      FRAG_BUFFERED: 'hlsFragBuffered',
+      LEVEL_LOADED: 'hlsLevelLoaded',
+    };
     static ErrorTypes = {
       NETWORK_ERROR: 'networkError',
       MEDIA_ERROR: 'mediaError',

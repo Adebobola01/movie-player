@@ -134,6 +134,15 @@ describe('HlsEngine error recovery', () => {
     expect(hls.recoverMediaError).toHaveBeenCalledTimes(2);
   });
 
+  it('reports live status changes once', () => {
+    const live = vi.fn();
+    engine.onLiveChange(live);
+    hls.emit('hlsLevelLoaded', { details: { live: true } });
+    hls.emit('hlsLevelLoaded', { details: { live: true } });
+    expect(live).toHaveBeenCalledTimes(1);
+    expect(live).toHaveBeenCalledWith(true);
+  });
+
   it('cancels pending retries on destroy', () => {
     fire('networkError', 'fragLoadError');
     engine.destroy();

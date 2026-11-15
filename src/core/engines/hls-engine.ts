@@ -22,6 +22,8 @@ export class HlsEngine implements Engine {
   private retryTimer: ReturnType<typeof setTimeout> | undefined;
   private lastMediaRecovery = 0;
   private mediaRecoveries = 0;
+  private liveListeners = new Set<(live: boolean) => void>();
+  private live: boolean | undefined;
 
   constructor(
     private Ctor: HlsConstructor,
@@ -32,6 +34,11 @@ export class HlsEngine implements Engine {
     // A fragment buffering successfully means the stream is healthy again.
     this.hls.on(Ctor.Events.FRAG_BUFFERED, () => {
       this.networkRetries = 0;
+    });
+    this.hls.on(Ctor.Events.LEVEL_LOADED, (_event, data) => {
+      if (data.details.live === this.live) return;
+      this.live = data.details.live;
+      for (const listener of [...this.liveListeners]) listener(this.live);
     });
   }
 
@@ -52,10 +59,16 @@ export class HlsEngine implements Engine {
     clearTimeout(this.retryTimer);
     this.hls.destroy();
     this.errors.clear();
+    this.liveListeners.clear();
   }
 
   onError(callback: Parameters<Engine['onError']>[0]) {
     return this.errors.on(callback);
+  }
+
+  onLiveChange(callback: (live: boolean) => void) {
+    this.liveListeners.add(callback);
+    return () => this.liveListeners.delete(callback);
   }
 
   private handleError(data: ErrorData): void {

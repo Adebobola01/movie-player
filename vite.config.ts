@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       environment: 'happy-dom',
+      // Node 25+ ships its own (file-backed) localStorage that shadows happy-dom's.
+      execArgv: ['--no-experimental-webstorage'],
       include: ['src/**/*.test.ts'],
     },
   };
