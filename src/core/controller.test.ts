@@ -190,6 +190,17 @@ describe('PlayerController', () => {
       expect(controller.state.currentTime).toBe(12.5);
     });
 
+    it('dispatches statechange with the new and previous status', async () => {
+      const onState = vi.fn();
+      controller.addEventListener('statechange', onState);
+      await controller.play();
+      expect(onState).toHaveBeenCalledOnce();
+      expect((onState.mock.calls[0][0] as CustomEvent).detail).toEqual({
+        status: 'playing',
+        previous: 'ready',
+      });
+    });
+
     it('re-dispatches media events', async () => {
       const onPlaying = vi.fn();
       controller.addEventListener('playing', onPlaying);

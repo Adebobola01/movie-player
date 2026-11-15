@@ -108,6 +108,10 @@ export class PlayerController extends EventTarget {
       createInitialState({ capabilities: { ...detectCapabilities(), ...options.capabilities } }),
     );
     this.syncVolume();
+    this.store.subscribe(
+      (s) => s.status,
+      (status, previous) => this.emit('statechange', { status, previous }),
+    );
   }
 
   get state(): PlayerState {
