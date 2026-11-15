@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       minify: cdn,
       rolldownOptions: {
-        external: cdn ? [] : [/^lit/, /^hls\.js/],
+        external: cdn ? [] : [/^lit/, /^@lit\//, /^hls\.js/],
       },
     },
     test: {

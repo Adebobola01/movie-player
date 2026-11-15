@@ -1,7 +1,10 @@
+import { ContextProvider } from '@lit/context';
 import { LitElement, css, html, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { CONTROLLER_EVENTS, PlayerController } from './core/controller.js';
 import type { PlayerState } from './core/types.js';
+import { playerContext } from './ui/context.js';
+import './ui/controls/index.js';
 
 /**
  * <movie-player>: embeddable HLS movie player.
@@ -20,12 +23,26 @@ export class MoviePlayer extends LitElement {
       background: var(--mp-background, #000);
       aspect-ratio: var(--mp-aspect-ratio, 16 / 9);
       overflow: hidden;
+      color: var(--mp-control-color, #fff);
+      font-family: var(--mp-font, system-ui, sans-serif);
+      -webkit-tap-highlight-color: transparent;
+    }
+    :host(:fullscreen) {
+      aspect-ratio: auto;
     }
     video {
       width: 100%;
       height: 100%;
       display: block;
       object-fit: var(--mp-object-fit, contain);
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: var(--mp-control-gap, 2px);
+    }
+    .spacer {
+      flex: 1;
     }
   `;
 
@@ -50,8 +67,8 @@ export class MoviePlayer extends LitElement {
     this.video = document.createElement('video');
     this.video.setAttribute('part', 'video');
     this.video.playsInline = true;
-    this.video.controls = true; // temporary until custom controls land
     this.controller = new PlayerController(this, this.video);
+    new ContextProvider(this, { context: playerContext, initialValue: this.controller });
     for (const type of CONTROLLER_EVENTS) {
       this.controller.addEventListener(type, (event) => {
         this.dispatchEvent(
@@ -111,7 +128,26 @@ export class MoviePlayer extends LitElement {
   }
 
   render() {
-    return html`${this.video}`;
+    // exportparts lets page CSS style inside each control, e.g. movie-player::part(play-button).
+    return html`
+      ${this.video}
+      <mp-spinner exportparts="spinner"></mp-spinner>
+      <mp-big-play exportparts="big-play"></mp-big-play>
+      <mp-control-bar part="control-bar">
+        <mp-seek-bar
+          exportparts="seek-bar, seek-track, seek-buffered, seek-progress, seek-thumb, seek-tooltip"
+        ></mp-seek-bar>
+        <div class="row" part="control-row">
+          <mp-play-button exportparts="button: play-button"></mp-play-button>
+          <mp-volume exportparts="mute-button, volume-slider"></mp-volume>
+          <mp-time-display exportparts="time, current-time, duration, live"></mp-time-display>
+          <span class="spacer"></span>
+          <mp-pip-button exportparts="button: pip-button"></mp-pip-button>
+          <mp-fullscreen-button exportparts="button: fullscreen-button"></mp-fullscreen-button>
+        </div>
+      </mp-control-bar>
+      <mp-error-overlay exportparts="error, error-message, error-retry"></mp-error-overlay>
+    `;
   }
 
   // ─── Public API (mirrors HTMLMediaElement where it makes sense) ──────────
