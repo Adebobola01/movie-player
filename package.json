@@ -1,0 +1,59 @@
+{
+  "name": "movie-player",
+  "version": "0.0.0",
+  "description": "Embeddable HLS movie player web component with adaptive bitrate, quality selection, subtitles and theming",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run build:lib && npm run build:cdn && npm run build:types",
+    "build:lib": "vite build",
+    "build:cdn": "vite build --mode cdn",
+    "build:types": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "streams": "bash scripts/generate-test-streams.sh"
+  },
+  "keywords": [
+    "video",
+    "player",
+    "hls",
+    "web-component",
+    "subtitles",
+    "abr"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "hls.js": "^1.7.4",
+    "lit": "^3.3.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
+    "eslint": "^10.15.0",
+    "happy-dom": "^21.0.4",
+    "prettier": "^3.10.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
+    "vitest": "^4.1.12"
+  },
+  "module": "./dist/movie-player.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/movie-player.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/movie-player.js",
+    "./src/index.ts"
+  ]
+}

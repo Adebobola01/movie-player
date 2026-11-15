@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie Player Playground</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 960px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      label {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      input {
+        flex: 1;
+      }
+    </style>
+    <script type="module" src="/src/index.ts"></script>
+  </head>
+  <body>
+    <h1>Movie Player Playground</h1>
+    <label>
+      Stream URL
+      <input id="src" />
+    </label>
+    <movie-player id="player" muted></movie-player>
+
+    <script type="module">
+      // Uses the local ffmpeg ladder if `npm run streams` has been run, otherwise a public test stream.
+      const local = '/streams/master.m3u8';
+      const fallback = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+      const hasLocal = await fetch(local, { method: 'HEAD' })
+        .then((r) => r.ok && r.headers.get('content-type') !== 'text/html')
+        .catch(() => false);
+      const input = document.getElementById('src');
+      const player = document.getElementById('player');
+      input.value = hasLocal ? local : fallback;
+      player.src = input.value;
+      input.addEventListener('change', () => (player.src = input.value));
+    </script>
+  </body>
+</html>
