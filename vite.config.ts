@@ -16,11 +16,13 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       minify: cdn,
       rolldownOptions: {
-        external: cdn ? [] : [/^lit/, /^hls\.js/],
+        external: cdn ? [] : [/^lit/, /^@lit\//, /^hls\.js/],
       },
     },
     test: {
       environment: 'happy-dom',
+      // Node 25+ ships its own (file-backed) localStorage that shadows happy-dom's.
+      execArgv: ['--no-experimental-webstorage'],
       include: ['src/**/*.test.ts'],
     },
   };
